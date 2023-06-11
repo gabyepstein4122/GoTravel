@@ -125,9 +125,6 @@ if ( (!ciudades.includes(origen)) || (!ciudades.includes(destino))) {
     destino = prompt("Ingresar ciudad de destino:" + "\n" + "posibles destinos: " + "\n" + ciudades.join(", ") ).toLowerCase()
 }
 
-reserva.unshift(origen)
-reserva.push(destino)
-
 let mes = prompt("En qué mes deseas viajar?\n" + meses.join(", ")).toLowerCase()
 
 function validarMes(mes){
