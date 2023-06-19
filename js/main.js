@@ -1,21 +1,19 @@
-import { buscar, envioFormulario, enviar, resetear, mostrarOpcionesFiltradas, filtrarOpciones, asignarEvento, validarInput} from './functions.js';
-
 const ciudades = [
     "buenos aires","miami","rio de janeiro","montevideo","barcelona","paris","lisboa","londres","berlin","cancun",
     "bogota","lima","new york","cordoba","roma",
-]
+];
 const meses = [
     "enero","febero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"
-]
-const iva = 21
-const precio = {bajoCosto:50,medioCosto:120,altoCosto:250,gratis:0,costoFinal:0}
-const ciudadesGrupoA = ciudades.slice(0, 5)
-const ciudadesGrupoB = ciudades.slice(5, 10)
-const ciudadesGrupoC = ciudades.slice(10, 15)
-const aleatorio = []
+];
+const iva = 21;
+const precio = {bajoCosto:50,medioCosto:120,altoCosto:250,gratis:0,costoFinal:0};
+const ciudadesGrupoA = ciudades.slice(0, 5);
+const ciudadesGrupoB = ciudades.slice(5, 10);
+const ciudadesGrupoC = ciudades.slice(10, 15);
+const aleatorio = [];
 for (let i = 0; i < 31; i++) {
-  const numeroAleatorio = Math.floor(Math.random() * 5)
-    aleatorio.push(numeroAleatorio)
+    const numeroAleatorio = Math.floor(Math.random() * 5);
+    aleatorio.push(numeroAleatorio);
 }
 
 const datosBusqueda = {
@@ -25,19 +23,79 @@ const datosBusqueda = {
     fechaVuelta: ""
 };
 
-const formulario = document.getElementById("formulario")
+const formulario = document.getElementById("formulario");
 const elementoLista = document.createElement('li');
 const origenInput = document.getElementById('origen');
 const destinoInput = document.getElementById('destino');
 
+const mostrarOpcionesFiltradas = (opciones, inputElement, opcionesElement) => {
+    opciones.forEach(opcion => {
+        const elementoLista = document.createElement('li');
+        elementoLista.textContent = opcion;
+        elementoLista.addEventListener('click', function() {
+            inputElement.value = opcion;
+            opcionesElement.innerHTML = "";
+        });
+        opcionesElement.appendChild(elementoLista);
+    });
+};
 
-window.addEventListener("load", function() {
-    enviar()
-    resetear()
+function filtrarOpciones(evento) {
+    const textoIngresado = evento.value;
+    const opcionesFiltradas = ciudades.filter(ciudad => ciudad.toLowerCase().startsWith(textoIngresado.toLowerCase()));
+    const opcionesElement = evento.id === 'origen' ? document.getElementById('opciones-origen') : document.getElementById('opciones-destino');
+    mostrarOpcionesFiltradas(opcionesFiltradas, evento, opcionesElement);
+}
+
+function asignarEvento() {
+    document.addEventListener('DOMContentLoaded', function() {
+        origenInput.addEventListener('input', filtrarOpciones);
+        destinoInput.addEventListener('input', filtrarOpciones);
+    });
+}
+
+function validarInput() {
+    const error = document.querySelectorAll(".error");
+    const misInputs = document.querySelectorAll(".form-control");
+    const opcionesFiltradas = ciudades.filter(ciudad => ciudad.toLowerCase().startsWith(textoIngresado.toLowerCase()));
+    misInputs.addEventListener("input", function () {
+        if (misInputs.target.value !== opcionesFiltradas ) {
+            error.innerHTML = "<p>El valor ingresado no es válido</p>";
+            errorElement.classList.add("text-danger", "mt-1");
+        } else {
+            errorElement.classList.remove("text-danger", "mt-1");
+        }
+    });
+}
+
+const buscar = () => {
+    datosBusqueda.origen = document.getElementById("origen").value;
+    datosBusqueda.destino = document.getElementById("destino").value;
+    datosBusqueda.fechaIda = document.getElementById("fechaIda").value;
+    datosBusqueda.fechaVuelta = document.getElementById("fechaVuelta").value;
+    sessionStorage.setItem("busqueda", JSON.stringify(datosBusqueda));
+};
+
+function envioFormulario(evento) {
+    evento.preventDefault();
+    buscar();
+}
+
+function enviar() {
+    formulario.addEventListener("submit", envioFormulario);
+}
+
+function resetear() {
+    formulario.reset();
+    sessionStorage.clear();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    origenInput.addEventListener('input', filtrarOpciones);
+    destinoInput.addEventListener('input', filtrarOpciones);
+    enviar();
+    resetear();
 });
-
-
-
 
 //let vuelosEncontradosHTML = 
 
