@@ -36,7 +36,6 @@ window.addEventListener("load", function() {
     resetear()
 });
 
-document.addEventListener('DOMContentLoaded',);
 
 
 
