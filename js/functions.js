@@ -42,8 +42,10 @@ function filtrarOpciones(evento) {
 }
 
 function asignarEvento() {
-    origenInput.addEventListener('input', filtrarOpciones());
-    destinoInput.addEventListener('input', filtrarOpciones());
+    document.addEventListener('DOMContentLoaded', function() {
+        origenInput.addEventListener('input', filtrarOpcionesOrigen);
+        destinoInput.addEventListener('input', filtrarOpcionesDestino);
+    });
 }
 
 function validarInput() {
