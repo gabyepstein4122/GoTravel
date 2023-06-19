@@ -34,11 +34,11 @@ const mostrarOpcionesFiltradas = (opciones, inputElement, opcionesElement) => {
     })
 }
 
-function filtrarOpciones() {
-    const textoIngresado = this.value;
+function filtrarOpciones(evento) {
+    const textoIngresado = evento.value;
     const opcionesFiltradas = ciudades.filter(ciudad => ciudad.toLowerCase().startsWith(textoIngresado.toLowerCase()));
-    const opcionesElement = this.id === 'origen' ? document.getElementById('opciones-origen') : document.getElementById('opciones-destino');
-    mostrarOpcionesFiltradas(opcionesFiltradas, this, opcionesElement);
+    const opcionesElement = evento.id === 'origen' ? document.getElementById('opciones-origen') : document.getElementById('opciones-destino');
+    mostrarOpcionesFiltradas(opcionesFiltradas, evento, opcionesElement);
 }
 
 function asignarEvento() {
