@@ -1,0 +1,55 @@
+*{
+    font-family: 'Aref Ruqaa Ink','Oswald' , sans-serif , Verdana;
+    margin: 0px;
+    border: 0px;
+}
+
+.colorVerde{
+    background-color: #00613e
+}
+
+.divBuscador{
+    padding: 30px;
+}
+
+.input-pos {
+    position: relative;
+}
+
+.input-pos input {
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.input-pos input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.input-pos .opciones {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #9cffba;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    z-index: 1;
+}
+
+.input-pos .opciones li {
+    padding: 4px 8px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.input-pos .opciones li:hover {
+    background-color: #066b44;
+    color: rgb(10, 10, 10);
+}
+
