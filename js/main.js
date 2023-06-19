@@ -29,8 +29,7 @@ const formulario = document.getElementById("formulario")
 const elementoLista = document.createElement('li');
 const origenInput = document.getElementById('origen');
 const destinoInput = document.getElementById('destino');
-origenInput.addEventListener('input', filtrarOpciones());
-destinoInput.addEventListener('input', filtrarOpciones());
+
 
 window.addEventListener("load", function() {
     enviar()
