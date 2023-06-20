@@ -2,14 +2,26 @@ const ciudades = [
     "buenos aires","miami","rio de janeiro","montevideo","barcelona","paris","lisboa","londres","berlin","cancun",
     "bogota","lima","new york","cordoba","roma",
 ];
+
 const meses = [
-    "enero","febero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"
+    "enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"
 ];
+
 const iva = 21;
-const precio = {bajoCosto:50,medioCosto:120,altoCosto:250,gratis:0,costoFinal:0};
+
+const bajoCosto = 50;
+const medioCosto = 120;
+const altoCosto = 250;
+const gratis = 0;
+const costoFinal = 0;
+
+const precios = [bajoCosto, medioCosto, altoCosto, gratis, costoFinal];
+
 const ciudadesGrupoA = ciudades.slice(0, 5);
 const ciudadesGrupoB = ciudades.slice(5, 10);
 const ciudadesGrupoC = ciudades.slice(10, 15);
+
+
 const aleatorio = [];
 for (let i = 0; i < 31; i++) {
     const numeroAleatorio = Math.floor(Math.random() * 5);
@@ -24,11 +36,11 @@ const datosBusqueda = {
 };
 
 const formulario = document.getElementById("formulario");
-const elementoLista = document.createElement('li');
 const origenInput = document.getElementById('origen');
 const destinoInput = document.getElementById('destino');
 
 const mostrarOpcionesFiltradas = (opciones, inputElement, opcionesElement) => {
+    opcionesElement.innerHTML = "";
     opciones.forEach(opcion => {
         const elementoLista = document.createElement('li');
         elementoLista.textContent = opcion;
@@ -41,36 +53,70 @@ const mostrarOpcionesFiltradas = (opciones, inputElement, opcionesElement) => {
 };
 
 function filtrarOpciones(evento) {
-    const textoIngresado = evento.value;
+    const textoIngresado = evento.target.value;
+    const opcionesElement = evento.target.id === 'origen' ? document.getElementById('opciones-origen') : document.getElementById('opciones-destino');
     const opcionesFiltradas = ciudades.filter(ciudad => ciudad.toLowerCase().startsWith(textoIngresado.toLowerCase()));
-    const opcionesElement = evento.id === 'origen' ? document.getElementById('opciones-origen') : document.getElementById('opciones-destino');
-    mostrarOpcionesFiltradas(opcionesFiltradas, evento, opcionesElement);
+    mostrarOpcionesFiltradas(opcionesFiltradas, evento.target, opcionesElement);
 }
 
 function asignarEvento() {
-    document.addEventListener('DOMContentLoaded', function() {
-        origenInput.addEventListener('input', filtrarOpciones);
-        destinoInput.addEventListener('input', filtrarOpciones);
+    const opcionesOrigen = document.getElementById('opciones-origen');
+    const opcionesDestino = document.getElementById('opciones-destino');
+    origenInput.addEventListener('input', function() {
+        opcionesOrigen.style.display = 'block';
+        filtrarOpciones(event);
     });
-}
-
-function validarInput() {
-    const error = document.querySelectorAll(".error");
-    const misInputs = document.querySelectorAll(".form-control");
-    const opcionesFiltradas = ciudades.filter(ciudad => ciudad.toLowerCase().startsWith(textoIngresado.toLowerCase()));
-    misInputs.addEventListener("input", function () {
-        if (misInputs.target.value !== opcionesFiltradas ) {
-            error.innerHTML = "<p>El valor ingresado no es válido</p>";
-            errorElement.classList.add("text-danger", "mt-1");
-        } else {
-            errorElement.classList.remove("text-danger", "mt-1");
+    destinoInput.addEventListener('input', function() {
+        opcionesDestino.style.display = 'block';
+        filtrarOpciones(event);
+    });
+    document.addEventListener('click', function(event) {
+        const clickedElement = event.target;
+        if (!origenInput.contains(clickedElement) && !opcionesOrigen.contains(clickedElement)) {
+        opcionesOrigen.style.display = 'none';
+        }
+        if (!destinoInput.contains(clickedElement) && !opcionesDestino.contains(clickedElement)) {
+            opcionesDestino.style.display = 'none';
         }
     });
 }
 
+
+document.addEventListener('DOMContentLoaded', function() {
+    const opcionesOrigen = document.getElementById('opciones-origen');
+    const opcionesDestino = document.getElementById('opciones-destino');
+    opcionesOrigen.style.display = 'none';
+    opcionesDestino.style.display = 'none';
+    
+    asignarEvento();
+});
+
+function validarInput() {
+    const error1 = document.getElementById("error1");
+    const error2 = document.getElementById("error2");
+
+    origenInput.addEventListener("input", function () {
+        const textoIngresado = origenInput.value.toLowerCase();
+        const opcionesFiltradas = ciudades.filter(ciudad => ciudad.toLowerCase().startsWith(textoIngresado));
+        mostrarOpcionesFiltradas(opcionesFiltradas, origenInput, document.getElementById('opciones-origen'));
+        error1.innerHTML = opcionesFiltradas.includes(textoIngresado) ? "" : "<p>El valor ingresado no es válido</p>";
+        error1.classList.toggle("text-danger", !!error1.innerHTML);
+        error1.classList.toggle("mt-1", !!error1.innerHTML);
+    });
+
+    destinoInput.addEventListener("input", function () {
+        const textoIngresado = destinoInput.value.toLowerCase();
+        const opcionesFiltradas = ciudades.filter(ciudad => ciudad.toLowerCase().startsWith(textoIngresado));
+        mostrarOpcionesFiltradas(opcionesFiltradas, destinoInput, document.getElementById('opciones-destino'));
+        error2.innerHTML = opcionesFiltradas.includes(textoIngresado) ? "" : "<p>El valor ingresado no es válido</p>";
+        error2.classList.toggle("text-danger", !!error2.innerHTML);
+        error2.classList.toggle("mt-1", !!error2.innerHTML);
+    });
+}  
+
 const buscar = () => {
-    datosBusqueda.origen = document.getElementById("origen").value;
-    datosBusqueda.destino = document.getElementById("destino").value;
+    datosBusqueda.origen = origenInput.value;
+    datosBusqueda.destino = destinoInput.value;
     datosBusqueda.fechaIda = document.getElementById("fechaIda").value;
     datosBusqueda.fechaVuelta = document.getElementById("fechaVuelta").value;
     sessionStorage.setItem("busqueda", JSON.stringify(datosBusqueda));
@@ -91,243 +137,89 @@ function resetear() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    origenInput.addEventListener('input', filtrarOpciones);
-    destinoInput.addEventListener('input', filtrarOpciones);
+    mostrarOpcionesFiltradas(ciudades, origenInput, document.getElementById('opciones-origen'));
+    mostrarOpcionesFiltradas(ciudades, destinoInput, document.getElementById('opciones-destino'));
+    asignarEvento();
     enviar();
     resetear();
 });
 
-//let vuelosEncontradosHTML = 
+const obtenerVueloAleatorio = () => {
+    const origen = ciudades[Math.floor(Math.random() * ciudades.length)];
+    const destino = ciudades[Math.floor(Math.random() * ciudades.length)];
+    const precio = precios[Math.floor(Math.random() * precios.length)];
+    const mes = meses[Math.floor(Math.random() * meses.length)];
 
-// let vuelosDisponibles =[
-//     { origen: ciudadesGrupoA[aleatorio[8]], destino: ciudadesGrupoC[aleatorio[3]], precio: precio.altoCosto, mes: meses[2]},
-//     { origen: ciudadesGrupoB[aleatorio[18]], destino: ciudadesGrupoA[aleatorio[23]], precio: precio.bajoCosto, mes: meses[0]},
-//     { origen: ciudadesGrupoC[aleatorio[1]], destino: ciudadesGrupoC[aleatorio[16]], precio: precio.medioCosto, mes: meses[11]}, 
-//     { origen: ciudadesGrupoA[aleatorio[5]], destino: ciudadesGrupoB[aleatorio[7]], precio: precio.bajoCosto, mes: meses[6]},
-//     { origen: ciudadesGrupoB[aleatorio[17]], destino: ciudadesGrupoC[aleatorio[4]], precio: precio.gratis, mes: meses[3]},
-//     { origen: ciudadesGrupoC[aleatorio[28]], destino: ciudadesGrupoA[aleatorio[2]], precio: precio.bajoCosto, mes: meses[4]},
-//     { origen: ciudadesGrupoA[aleatorio[3]], destino: ciudadesGrupoA[aleatorio[15]], precio: precio.altoCosto, mes: meses[1]},
-//     { origen: ciudadesGrupoB[aleatorio[9]], destino: ciudadesGrupoB[aleatorio[24]], precio: precio.bajoCosto, mes: meses[5]},
-//     { origen: ciudadesGrupoA[aleatorio[10]], destino: ciudadesGrupoC[aleatorio[11]], precio: precio.medioCosto, mes: meses[7]},
-//     { origen: ciudadesGrupoC[aleatorio[21]], destino: ciudadesGrupoC[aleatorio[22]], precio: precio.bajoCosto, mes: meses[8]},
-//     { origen: ciudadesGrupoB[aleatorio[7]], destino: ciudadesGrupoC[aleatorio[6]], precio: precio.altoCosto, mes: meses[10]},
-//     { origen: ciudadesGrupoA[aleatorio[13]], destino: ciudadesGrupoB[aleatorio[27]], precio: precio.bajoCosto, mes: meses[9]},
-//     { origen: ciudadesGrupoA[aleatorio[16]], destino: ciudadesGrupoB[aleatorio[22]], precio: precio.altoCosto, mes: meses[4]},
-//     { origen: ciudadesGrupoB[aleatorio[4]], destino: ciudadesGrupoC[aleatorio[26]], precio: precio.bajoCosto, mes: meses[8]},
-//     { origen: ciudadesGrupoA[aleatorio[0]], destino: ciudadesGrupoB[aleatorio[29]], precio: precio.medioCosto, mes: meses[0]},
-//     { origen: ciudadesGrupoB[aleatorio[11]], destino: ciudadesGrupoB[aleatorio[8]], precio: precio.gratis , mes: meses[2]},
-//     { origen: ciudadesGrupoA[aleatorio[17]], destino: ciudadesGrupoC[aleatorio[4]], precio: precio.altoCosto, mes: meses[11]},
-//     { origen: ciudadesGrupoA[aleatorio[28]], destino: ciudadesGrupoB[aleatorio[2]], precio: precio.bajoCosto, mes: meses[3]},
-//     { origen: ciudadesGrupoA[aleatorio[8]], destino: ciudadesGrupoA[aleatorio[3]], precio: precio.altoCosto, mes: meses[4]},
-//     { origen: ciudadesGrupoC[aleatorio[18]], destino: ciudadesGrupoC[aleatorio[23]], precio: precio.bajoCosto, mes: meses[7]},
-//     { origen: ciudadesGrupoA[aleatorio[1]], destino: ciudadesGrupoC[aleatorio[16]], precio: precio.medioCosto, mes: meses[6]},
-//     { origen: ciudadesGrupoB[aleatorio[5]], destino: ciudadesGrupoC[aleatorio[7]], precio: precio.bajoCosto, mes: meses[9]},
-//     { origen: ciudadesGrupoC[aleatorio[17]], destino: ciudadesGrupoC[aleatorio[4]], precio: precio.altoCosto, mes: meses[10]},
-//     { origen: ciudadesGrupoC[aleatorio[28]], destino: ciudadesGrupoA[aleatorio[2]], precio: precio.bajoCosto, mes: meses[1]},
-//     { origen: ciudadesGrupoA[aleatorio[8]], destino: ciudadesGrupoB[aleatorio[3]], precio: precio.altoCosto, mes: meses[1]},
-//     { origen: ciudadesGrupoA[aleatorio[18]], destino: ciudadesGrupoB[aleatorio[23]], precio: precio.bajoCosto, mes: meses[5]},
-//     { origen: ciudadesGrupoB[aleatorio[1]], destino: ciudadesGrupoB[aleatorio[17]], precio: precio.medioCosto, mes: meses[11]},
-//     { origen: ciudadesGrupoB[aleatorio[5]], destino: ciudadesGrupoC[aleatorio[7]], precio: precio.bajoCosto, mes: meses[0]},
-//     { origen: ciudadesGrupoA[aleatorio[17]], destino: ciudadesGrupoC[aleatorio[4]], precio: precio.altoCosto, mes: meses[2]},
-//     { origen: ciudadesGrupoC[aleatorio[28]], destino: ciudadesGrupoC[aleatorio[2]], precio: precio.bajoCosto, mes: meses[1]},
-//     { origen: ciudadesGrupoB[aleatorio[15]], destino: ciudadesGrupoC[aleatorio[3]], precio: precio.altoCosto, mes: meses[3]},
-//     { origen: ciudadesGrupoA[aleatorio[1]], destino: ciudadesGrupoA[aleatorio[20]], precio: precio.bajoCosto, mes: meses[5]},
-//     { origen: ciudadesGrupoA[aleatorio[10]], destino: ciudadesGrupoB[aleatorio[18]], precio: precio.medioCosto, mes: meses[9]},
-//     { origen: ciudadesGrupoA[aleatorio[5]], destino: ciudadesGrupoC[aleatorio[7]], precio: precio.gratis, mes: meses[7]},
-//     { origen: ciudadesGrupoA[aleatorio[12]], destino: ciudadesGrupoB[aleatorio[4]], precio: precio.altoCosto, mes: meses[8]},
-//     { origen: ciudadesGrupoB[aleatorio[23]], destino: ciudadesGrupoC[aleatorio[20]], precio: precio.bajoCosto, mes: meses[3]},
-//     { origen: ciudadesGrupoB[aleatorio[8]], destino: ciudadesGrupoB[aleatorio[3]], precio: precio.altoCosto, mes: meses[10]},
-//     { origen: ciudadesGrupoA[aleatorio[18]], destino: ciudadesGrupoC[aleatorio[25]], precio: precio.bajoCosto, mes: meses[0]},
-//     { origen: ciudadesGrupoA[aleatorio[2]], destino: ciudadesGrupoB[aleatorio[16]], precio: precio.medioCosto, mes: meses[1]},
-//     { origen: ciudadesGrupoB[aleatorio[6]], destino: ciudadesGrupoB[aleatorio[9]], precio: precio.bajoCosto, mes: meses[11]},
-//     { origen: ciudadesGrupoA[aleatorio[17]], destino: ciudadesGrupoC[aleatorio[5]], precio: precio.altoCosto, mes: meses[4]},
-//     { origen: ciudadesGrupoB[aleatorio[28]], destino: ciudadesGrupoC[aleatorio[2]], precio: precio.gratis, mes: meses[2]},
-//     { origen: ciudadesGrupoB[aleatorio[2]], destino: ciudadesGrupoB[aleatorio[3]], precio: precio.altoCosto, mes: meses[2]},
-//     { origen: ciudadesGrupoA[aleatorio[1]], destino: ciudadesGrupoA[aleatorio[23]], precio: precio.bajoCosto, mes: meses[2]},
-//     { origen: ciudadesGrupoC[aleatorio[19]], destino: ciudadesGrupoC[aleatorio[16]], precio: precio.medioCosto, mes: meses[1]}, 
-//     { origen: ciudadesGrupoC[aleatorio[5]], destino: ciudadesGrupoA[aleatorio[7]], precio: precio.bajoCosto, mes: meses[7]},
-//     { origen: ciudadesGrupoA[aleatorio[7]], destino: ciudadesGrupoB[aleatorio[4]], precio: precio.gratis, mes: meses[4]},
-//     { origen: ciudadesGrupoC[aleatorio[24]], destino: ciudadesGrupoB[aleatorio[2]], precio: precio.bajoCosto, mes: meses[4]},
-//     { origen: ciudadesGrupoB[aleatorio[13]], destino: ciudadesGrupoB[aleatorio[15]], precio: precio.altoCosto, mes: meses[1]},
-//     { origen: ciudadesGrupoB[aleatorio[1]], destino: ciudadesGrupoC[aleatorio[24]], precio: precio.bajoCosto, mes: meses[3]},
-//     { origen: ciudadesGrupoA[aleatorio[10]], destino: ciudadesGrupoA[aleatorio[11]], precio: precio.medioCosto, mes: meses[7]},
-//     { origen: ciudadesGrupoC[aleatorio[21]], destino: ciudadesGrupoB[aleatorio[22]], precio: precio.bajoCosto, mes: meses[5]},
-//     { origen: ciudadesGrupoB[aleatorio[8]], destino: ciudadesGrupoA[aleatorio[6]], precio: precio.altoCosto, mes: meses[10]},
-//     { origen: ciudadesGrupoB[aleatorio[5]], destino: ciudadesGrupoC[aleatorio[27]], precio: precio.bajoCosto, mes: meses[9]},
-//     { origen: ciudadesGrupoA[aleatorio[6]], destino: ciudadesGrupoB[aleatorio[22]], precio: precio.altoCosto, mes: meses[3]},
-//     { origen: ciudadesGrupoC[aleatorio[14]], destino: ciudadesGrupoB[aleatorio[26]], precio: precio.bajoCosto, mes: meses[11]},
-//     { origen: ciudadesGrupoC[aleatorio[10]], destino: ciudadesGrupoA[aleatorio[29]], precio: precio.medioCosto, mes: meses[0]},
-//     { origen: ciudadesGrupoB[aleatorio[21]], destino: ciudadesGrupoA[aleatorio[8]], precio: precio.gratis , mes: meses[2]},
-//     { origen: ciudadesGrupoA[aleatorio[27]], destino: ciudadesGrupoB[aleatorio[4]], precio: precio.altoCosto, mes: meses[11]},
-//     { origen: ciudadesGrupoC[aleatorio[29]], destino: ciudadesGrupoB[aleatorio[2]], precio: precio.bajoCosto, mes: meses[3]},
-//     { origen: ciudadesGrupoB[aleatorio[9]], destino: ciudadesGrupoC[aleatorio[3]], precio: precio.altoCosto, mes: meses[5]},
-//     { origen: ciudadesGrupoC[aleatorio[19]], destino: ciudadesGrupoC[aleatorio[23]], precio: precio.bajoCosto, mes: meses[7]},
-//     { origen: ciudadesGrupoB[aleatorio[12]], destino: ciudadesGrupoA[aleatorio[16]], precio: precio.medioCosto, mes: meses[6]},
-//     { origen: ciudadesGrupoA[aleatorio[4]], destino: ciudadesGrupoC[aleatorio[7]], precio: precio.bajoCosto, mes: meses[9]},
-//     { origen: ciudadesGrupoB[aleatorio[2]], destino: ciudadesGrupoB[aleatorio[4]], precio: precio.altoCosto, mes: meses[10]},
-//     { origen: ciudadesGrupoC[aleatorio[3]], destino: ciudadesGrupoB[aleatorio[2]], precio: precio.bajoCosto, mes: meses[1]},
-//     { origen: ciudadesGrupoC[aleatorio[16]], destino: ciudadesGrupoA[aleatorio[3]], precio: precio.altoCosto, mes: meses[1]},
-//     { origen: ciudadesGrupoA[aleatorio[13]], destino: ciudadesGrupoB[aleatorio[23]], precio: precio.bajoCosto, mes: meses[6]},
-//     { origen: ciudadesGrupoB[aleatorio[14]], destino: ciudadesGrupoA[aleatorio[17]], precio: precio.medioCosto, mes: meses[11]},
-//     { origen: ciudadesGrupoC[aleatorio[15]], destino: ciudadesGrupoB[aleatorio[7]], precio: precio.bajoCosto, mes: meses[0]},
-//     { origen: ciudadesGrupoB[aleatorio[17]], destino: ciudadesGrupoC[aleatorio[4]], precio: precio.altoCosto, mes: meses[2]},
-//     { origen: ciudadesGrupoC[aleatorio[0]], destino: ciudadesGrupoC[aleatorio[2]], precio: precio.bajoCosto, mes: meses[11]},
-//     { origen: ciudadesGrupoC[aleatorio[15]], destino: ciudadesGrupoB[aleatorio[3]], precio: precio.altoCosto, mes: meses[3]},
-//     { origen: ciudadesGrupoB[aleatorio[0]], destino: ciudadesGrupoB[aleatorio[20]], precio: precio.bajoCosto, mes: meses[8]},
-//     { origen: ciudadesGrupoC[aleatorio[10]], destino: ciudadesGrupoB[aleatorio[18]], precio: precio.medioCosto, mes: meses[9]},
-//     { origen: ciudadesGrupoA[aleatorio[5]], destino: ciudadesGrupoA[aleatorio[7]], precio: precio.gratis, mes: meses[7]},
-//     { origen: ciudadesGrupoC[aleatorio[12]], destino: ciudadesGrupoB[aleatorio[4]], precio: precio.altoCosto, mes: meses[11]},
-//     { origen: ciudadesGrupoA[aleatorio[23]], destino: ciudadesGrupoC[aleatorio[20]], precio: precio.bajoCosto, mes: meses[3]},
-//     { origen: ciudadesGrupoA[aleatorio[8]], destino: ciudadesGrupoC[aleatorio[3]], precio: precio.altoCosto, mes: meses[1]},
-//     { origen: ciudadesGrupoC[aleatorio[15]], destino: ciudadesGrupoC[aleatorio[25]], precio: precio.bajoCosto, mes: meses[0]},
-//     { origen: ciudadesGrupoB[aleatorio[23]], destino: ciudadesGrupoA[aleatorio[16]], precio: precio.medioCosto, mes: meses[1]},
-//     { origen: ciudadesGrupoB[aleatorio[6]], destino: ciudadesGrupoB[aleatorio[9]], precio: precio.bajoCosto, mes: meses[11]},
-//     { origen: ciudadesGrupoC[aleatorio[27]], destino: ciudadesGrupoA[aleatorio[5]], precio: precio.altoCosto, mes: meses[0]},
-//     { origen: ciudadesGrupoB[aleatorio[28]], destino: ciudadesGrupoA[aleatorio[2]], precio: precio.gratis, mes: meses[2]},
-// ]
+    return { origen, destino, precio, mes };
+};
 
+const generarVuelosDisponibles = () => {
+    const vuelosDisponibles = [];
+    for (let i = 0; i < 1000; i++) {
+        vuelosDisponibles.push(obtenerVueloAleatorio());
+    }
+    return vuelosDisponibles;
+};
 
+const vuelosDisponibles = generarVuelosDisponibles();
+localStorage.setItem('vuelosDisponibles', JSON.stringify(vuelosDisponibles))
 
-// let mes = prompt("En qué mes deseas viajar?\n" + meses.join(", ")).toLowerCase()
-
-// function validarMes(mes){
-//     while (!meses.includes(mes)){
-//     alert("Error, por favor elige un mes valido")
-//     mes = prompt("En qué mes deseas viajar?\n" + meses.join(", ")).toLowerCase()
-//     }
-//     return mes
-// }
-
-// validarMes(mes)
-
-
-// const obtenerFecha= (mes) => {
-//     switch (mes.toLowerCase()) {
-//     case "enero":
-//         fecha= prompt("En qué fecha de " + mes + " quieres viajar?")
-//         while ((fecha < 1 || fecha > 31) || isNaN(fecha)) {
-//             alert("Error. Por favor, ingresa una fecha válida")
-//             fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         }
-//     break
-//     case "febrero":
-//         fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         while ((fecha < 1 || fecha > 28) || isNaN(fecha)) {
-//             alert("Error. Por favor, ingresa una fecha válida")
-//             fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         }
-//     break
-//     case "marzo":
-//         fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         while ((fecha < 1 || fecha > 31) || isNaN(fecha)) {
-//             alert("Error. Por favor, ingresa una fecha válida")
-//             fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         }
-//     break
-//     case "abril":
-//         fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         while ((fecha < 1 || fecha > 30) || isNaN(fecha)) {
-//             alert("Error. Por favor, ingresa una fecha válida")
-//             fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         }
-//     break
-//     case "mayo":
-//         fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         while ((fecha < 1 || fecha > 31) || isNaN(fecha)) {
-//             alert("Error. Por favor, ingresa una fecha válida")
-//             fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         }
-//     break
-//     case "junio":
-//         fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         while ((fecha < 1 || fecha > 30) || isNaN(fecha)) {
-//             alert("Error. Por favor, ingresa una fecha válida")
-//             fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         }
-//     break
-//     case "julio":
-//         fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         while ((fecha < 1 || fecha > 31) || isNaN(fecha)) {
-//             alert("Error. Por favor, ingresa una fecha válida")
-//             fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         }
-//     break
-//     case "agosto":
-//         fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         while ((fecha < 1 || fecha > 31) || isNaN(fecha)) {
-//             alert("Error. Por favor, ingresa una fecha válida");
-//             fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         }
-//     break
-//     case "septiembre":
-//         fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         while ((fecha < 1 || fecha > 30) || isNaN(fecha)) {
-//             alert("Error. Por favor, ingresa una fecha válida")
-//             fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         }
-//     break
-//     case "octubre":
-//         fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         while ((fecha < 1 || fecha > 31) || isNaN(fecha)) {
-//             alert("Error. Por favor, ingresa una fecha válida")
-//             fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         }
-//     break
-//     case "noviembre":
-//         fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         while ((fecha < 1 || fecha > 30) || isNaN(fecha)) {
-//             alert("Error. Por favor, ingresa una fecha válida")
-//             fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         }
-//     break
-//     case "diciembre":
-//         fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         while ((fecha < 1 || fecha > 31) || isNaN(fecha)) {
-//             alert("Error. Por favor, ingresa una fecha válida")
-//             fecha = prompt("En qué fecha de " + mes + " quieres viajar?")
-//         }
-//     break
-//     default:
-//         fecha = null
-//     }
-//     return fecha
-// }
-
-// obtenerFecha(mes)
-
-// const vuelosFiltrados = []
-
-// vuelosDisponibles.forEach(function(vuelo) {
-// if (vuelo.origen === origen && vuelo.destino === destino && vuelo.mes === mes) {
-//     vuelosFiltrados.push(vuelo)}
-// })
-
-// let solicitarIva
-// let salidaIva
-
-// if (vuelosFiltrados.length > 0) {
-//     let resultados = "Opciones disponibles para tu fecha:\n"
-
-//     for (let i = 0; i < vuelosFiltrados.length; i++) {
-//         const vuelo = vuelosFiltrados[i]
-//         resultados += (i + 1) + ". "
-//         resultados += "Origen: " + vuelo.origen + ", "
-//         resultados += "Destino: " + vuelo.destino + ", "
-//         resultados += "Precio: " + vuelo.precio + "\n"
-//     }
-//     alert(resultados)
-//     let confirmar = alert("desea confirmar?")
-//         if (confirmar === "si") {
-//             salida = alert("Tu reserva de vuelo de partida en " + origen + "con destino a " + destino + " con fecha para el " + fecha + " de " + mes + " tendra un costo de: $" + vuelo.precio + " sin impuestos (iva)")
-//         } else if (confirmar === "no") {
-//             alert("programa finalizado")
-//         } else{
-//             alert("error, ingrese un dato valido")
-//         }     
-// }else{
-//     alert("No se encontraron opciones disponibles")
-// }
-
+const contenidoHTML = `
+<section>
+    <div class="container">
+        <h2 class="text-center">Vuelos Encontrados</h2>
+        <div>
+            <div id="encontradosIda" class="container row">
+                <div class="d-flex align-items-center text-center">
+                    <svg width="30" height="30" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
+                        <path d="M20.012 18v2h-20v-2h20zm3.973-13.118c.154 1.349-.884 2.615-1.927 3.491-.877.735-9.051 6.099-9.44 6.307-1.756.936-3.332 1.306-4.646 1.32-1.36.014-2.439-.354-3.144-.872l-4.784-3.977 3.742-2.373 4.203 1.445.984-.578-4.973-3.645 3.678-2.124 7.992 1.545c.744-.445 1.482-.9 2.225-1.348 1.049-.623 2.056-1.055 3.387-1.055 1.321 0 2.552.52 2.703 1.864zm-4.341.512c-.419.192-3.179 1.882-3.615 2.144l-8.01-1.55-.418.241 5.288 3.307-4.683 2.876-4.214-1.448-.69.395c.917.729 1.787 1.522 2.751 2.186 1.472.962 4.344.22 5.685-.663.9-.592 7.551-4.961 8.436-5.582.605-.431 1.797-1.414 1.824-2.152l.001-.004c-.644-.287-1.716-.041-2.355.25z"/>
+                    </svg>
+                    <h4 class="mx-3">IDA</h4>
+                    <h4 class="mx-3">{$datosBusqueda.fechaIda}</h4>
+                </div>
+                <div class="d-flex my-4">
+                <div></div>
+                <div></div>
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="idaOpcion1">
+            </div>
+        <div class="d-flex my-4">
+          <div></div>
+          <div></div>
+          <input class="form-check-input" type="radio" name="flexRadioDefault" id="idaOpcion2">
+        </div>
+        <div class="d-flex my-4">
+          <div></div>
+          <div></div>
+          <input class="form-check-input" type="radio" name="flexRadioDefault" id="idaOpcion3">
+        </div>
+      </div>
+      <div id="encontradosVuelta" class="d-flex container row">
+        <div class="d-flex align-items-center text-center">
+          <svg width="30" height="30" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
+            <path d="M24.012 20h-20v-2h20v2zm-2.347-5.217c-.819 1.083-2.444 1.284-3.803 1.2-1.142-.072-10.761-1.822-11.186-1.939-1.917-.533-3.314-1.351-4.276-2.248-.994-.927-1.557-1.902-1.676-2.798l-.724-4.998 3.952.782 2.048 2.763 1.886.386-1.344-4.931 4.667 1.095 4.44 5.393 2.162.51c1.189.272 2.216.653 3.181 1.571.957.911 1.49 2.136.673 3.214zm-3.498-2.622c-.436-.15-3.221-.781-3.717-.892l-4.45-5.409-.682-.164 1.481 4.856-5.756-1.193-2.054-2.773-.772-.19.486 2.299c.403 1.712 2.995 3.155 4.575 3.439 1.06.192 8.89 1.612 9.959 1.773.735.105 2.277.214 2.805-.302l.003-.002c-.268-.652-1.214-1.213-1.878-1.442z"/>
+          </svg>
+          <h4 class="mx-3">VUELTA</h4>
+          <h4 class="mx-3">fecha 00/00/0000</h4>
+        </div>
+        <div class="d-flex my-4">
+          <div></div>
+          <div></div>
+          <input class="form-check-input" type="radio" name="flexRadioDefault" id="vueltaOpcion1">
+        </div>
+        <div class="d-flex my-4">
+          <div></div>
+          <div></div>
+          <input class="form-check-input" type="radio" name="flexRadioDefault" id="vueltaOpcion2">
+        </div>
+        <div class="d-flex my-4">
+          <div></div>
+          <div></div>
+          <input class="form-check-input" type="radio" name="flexRadioDefault" id="vueltaOpcion3">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 // solicitarIva = prompt("deseas saber el precio final con iva: (+21%) (si o no)")
 
