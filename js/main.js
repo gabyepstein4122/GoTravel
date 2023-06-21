@@ -164,68 +164,68 @@ const generarVuelosDisponibles = () => {
 const vuelosDisponibles = generarVuelosDisponibles();
 localStorage.setItem('vuelosDisponibles', JSON.stringify(vuelosDisponibles))
 
-const contenidoHTML = `
-<section>
-    <div class="container">
-        <h2 class="text-center">Vuelos Encontrados</h2>
-        <div>
-            <div id="encontradosIda" class="container row">
-                <div class="d-flex align-items-center text-center">
-                    <svg width="30" height="30" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
-                        <path d="M20.012 18v2h-20v-2h20zm3.973-13.118c.154 1.349-.884 2.615-1.927 3.491-.877.735-9.051 6.099-9.44 6.307-1.756.936-3.332 1.306-4.646 1.32-1.36.014-2.439-.354-3.144-.872l-4.784-3.977 3.742-2.373 4.203 1.445.984-.578-4.973-3.645 3.678-2.124 7.992 1.545c.744-.445 1.482-.9 2.225-1.348 1.049-.623 2.056-1.055 3.387-1.055 1.321 0 2.552.52 2.703 1.864zm-4.341.512c-.419.192-3.179 1.882-3.615 2.144l-8.01-1.55-.418.241 5.288 3.307-4.683 2.876-4.214-1.448-.69.395c.917.729 1.787 1.522 2.751 2.186 1.472.962 4.344.22 5.685-.663.9-.592 7.551-4.961 8.436-5.582.605-.431 1.797-1.414 1.824-2.152l.001-.004c-.644-.287-1.716-.041-2.355.25z"/>
-                    </svg>
-                    <h4 class="mx-3">IDA</h4>
-                    <h4 class="mx-3">{$datosBusqueda.fechaIda}</h4>
-                </div>
-                <div class="d-flex my-4">
-                <div></div>
-                <div></div>
-                <input class="form-check-input" type="radio" name="flexRadioDefault" id="idaOpcion1">
-            </div>
-        <div class="d-flex my-4">
-          <div></div>
-          <div></div>
-          <input class="form-check-input" type="radio" name="flexRadioDefault" id="idaOpcion2">
-        </div>
-        <div class="d-flex my-4">
-          <div></div>
-          <div></div>
-          <input class="form-check-input" type="radio" name="flexRadioDefault" id="idaOpcion3">
-        </div>
-      </div>
-      <div id="encontradosVuelta" class="d-flex container row">
-        <div class="d-flex align-items-center text-center">
-          <svg width="30" height="30" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
-            <path d="M24.012 20h-20v-2h20v2zm-2.347-5.217c-.819 1.083-2.444 1.284-3.803 1.2-1.142-.072-10.761-1.822-11.186-1.939-1.917-.533-3.314-1.351-4.276-2.248-.994-.927-1.557-1.902-1.676-2.798l-.724-4.998 3.952.782 2.048 2.763 1.886.386-1.344-4.931 4.667 1.095 4.44 5.393 2.162.51c1.189.272 2.216.653 3.181 1.571.957.911 1.49 2.136.673 3.214zm-3.498-2.622c-.436-.15-3.221-.781-3.717-.892l-4.45-5.409-.682-.164 1.481 4.856-5.756-1.193-2.054-2.773-.772-.19.486 2.299c.403 1.712 2.995 3.155 4.575 3.439 1.06.192 8.89 1.612 9.959 1.773.735.105 2.277.214 2.805-.302l.003-.002c-.268-.652-1.214-1.213-1.878-1.442z"/>
-          </svg>
-          <h4 class="mx-3">VUELTA</h4>
-          <h4 class="mx-3">fecha 00/00/0000</h4>
-        </div>
-        <div class="d-flex my-4">
-          <div></div>
-          <div></div>
-          <input class="form-check-input" type="radio" name="flexRadioDefault" id="vueltaOpcion1">
-        </div>
-        <div class="d-flex my-4">
-          <div></div>
-          <div></div>
-          <input class="form-check-input" type="radio" name="flexRadioDefault" id="vueltaOpcion2">
-        </div>
-        <div class="d-flex my-4">
-          <div></div>
-          <div></div>
-          <input class="form-check-input" type="radio" name="flexRadioDefault" id="vueltaOpcion3">
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+// //const contenidoHTML = `
+// <section>
+//     <div class="container">
+//         <h2 class="text-center">Vuelos Encontrados</h2>
+//         <div>
+//             <div id="encontradosIda" class="container row">
+//                 <div class="d-flex align-items-center text-center">
+//                     <svg width="30" height="30" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
+//                         <path d="M20.012 18v2h-20v-2h20zm3.973-13.118c.154 1.349-.884 2.615-1.927 3.491-.877.735-9.051 6.099-9.44 6.307-1.756.936-3.332 1.306-4.646 1.32-1.36.014-2.439-.354-3.144-.872l-4.784-3.977 3.742-2.373 4.203 1.445.984-.578-4.973-3.645 3.678-2.124 7.992 1.545c.744-.445 1.482-.9 2.225-1.348 1.049-.623 2.056-1.055 3.387-1.055 1.321 0 2.552.52 2.703 1.864zm-4.341.512c-.419.192-3.179 1.882-3.615 2.144l-8.01-1.55-.418.241 5.288 3.307-4.683 2.876-4.214-1.448-.69.395c.917.729 1.787 1.522 2.751 2.186 1.472.962 4.344.22 5.685-.663.9-.592 7.551-4.961 8.436-5.582.605-.431 1.797-1.414 1.824-2.152l.001-.004c-.644-.287-1.716-.041-2.355.25z"/>
+//                     </svg>
+//                     <h4 class="mx-3">IDA</h4>
+//                     <h4 class="mx-3">{$datosBusqueda.fechaIda}</h4>
+//                 </div>
+//                 <div class="d-flex my-4">
+//                 <div></div>
+//                 <div></div>
+//                 <input class="form-check-input" type="radio" name="flexRadioDefault" id="idaOpcion1">
+//             </div>
+//         <div class="d-flex my-4">
+//           <div></div>
+//           <div></div>
+//           <input class="form-check-input" type="radio" name="flexRadioDefault" id="idaOpcion2">
+//         </div>
+//         <div class="d-flex my-4">
+//           <div></div>
+//           <div></div>
+//           <input class="form-check-input" type="radio" name="flexRadioDefault" id="idaOpcion3">
+//         </div>
+//       </div>
+//       <div id="encontradosVuelta" class="d-flex container row">
+//         <div class="d-flex align-items-center text-center">
+//           <svg width="30" height="30" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
+//             <path d="M24.012 20h-20v-2h20v2zm-2.347-5.217c-.819 1.083-2.444 1.284-3.803 1.2-1.142-.072-10.761-1.822-11.186-1.939-1.917-.533-3.314-1.351-4.276-2.248-.994-.927-1.557-1.902-1.676-2.798l-.724-4.998 3.952.782 2.048 2.763 1.886.386-1.344-4.931 4.667 1.095 4.44 5.393 2.162.51c1.189.272 2.216.653 3.181 1.571.957.911 1.49 2.136.673 3.214zm-3.498-2.622c-.436-.15-3.221-.781-3.717-.892l-4.45-5.409-.682-.164 1.481 4.856-5.756-1.193-2.054-2.773-.772-.19.486 2.299c.403 1.712 2.995 3.155 4.575 3.439 1.06.192 8.89 1.612 9.959 1.773.735.105 2.277.214 2.805-.302l.003-.002c-.268-.652-1.214-1.213-1.878-1.442z"/>
+//           </svg>
+//           <h4 class="mx-3">VUELTA</h4>
+//           <h4 class="mx-3">fecha 00/00/0000</h4>
+//         </div>
+//         <div class="d-flex my-4">
+//           <div></div>
+//           <div></div>
+//           <input class="form-check-input" type="radio" name="flexRadioDefault" id="vueltaOpcion1">
+//         </div>
+//         <div class="d-flex my-4">
+//           <div></div>
+//           <div></div>
+//           <input class="form-check-input" type="radio" name="flexRadioDefault" id="vueltaOpcion2">
+//         </div>
+//         <div class="d-flex my-4">
+//           <div></div>
+//           <div></div>
+//           <input class="form-check-input" type="radio" name="flexRadioDefault" id="vueltaOpcion3">
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// </section>
 
-// solicitarIva = prompt("deseas saber el precio final con iva: (+21%) (si o no)")
+// // solicitarIva = prompt("deseas saber el precio final con iva: (+21%) (si o no)")
 
-// if ((solicitarIva==="si") && (solicitarIva==="no" )) {
-//     precio.costoFinal = (vuelo.precio * iva) / 100
-//     salidaIva = alert("su precio final con iva incluido en su pasaje aereo es de: " + precio.costoFinal)
-// } else{
-//     alert("gracias por usar el simulador")
-// }
+// // if ((solicitarIva==="si") && (solicitarIva==="no" )) {
+// //     precio.costoFinal = (vuelo.precio * iva) / 100
+// //     salidaIva = alert("su precio final con iva incluido en su pasaje aereo es de: " + precio.costoFinal)
+// // } else{
+// //     alert("gracias por usar el simulador")
+// //'
