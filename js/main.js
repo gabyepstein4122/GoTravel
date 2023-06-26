@@ -2,32 +2,24 @@ const ciudades = [
     "buenos aires","miami","rio de janeiro","montevideo","barcelona","paris","lisboa","londres","berlin","cancun",
     "bogota","lima","new york","cordoba","roma",
 ];
-
 const meses = [
     "enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"
 ];
-
 const iva = 21;
-
 const bajoCosto = 50;
 const medioCosto = 120;
 const altoCosto = 250;
 const gratis = 0;
 const costoFinal = 0;
-
 const precios = [bajoCosto, medioCosto, altoCosto, gratis, costoFinal];
-
 const ciudadesGrupoA = ciudades.slice(0, 5);
 const ciudadesGrupoB = ciudades.slice(5, 10);
 const ciudadesGrupoC = ciudades.slice(10, 15);
-
-
 const aleatorio = [];
 for (let i = 0; i < 31; i++) {
     const numeroAleatorio = Math.floor(Math.random() * 5);
     aleatorio.push(numeroAleatorio);
 }
-
 const datosBusqueda = {
     origen: "",
     destino: "",
@@ -35,66 +27,103 @@ const datosBusqueda = {
     fechaVuelta: ""
 };
 
-const formulario = document.getElementById("formulario");
+//DOM
 const origenInput = document.getElementById('origen');
 const destinoInput = document.getElementById('destino');
+const fechaIda = document.getElementById("fechaIda");
+const fechaVuelta = document.getElementById("fechaVuelta");
+const opcionesOrigen = document.getElementById("opcionesOrigen");
+const opcionesDestino = document.getElementById('opcionesDestino');
+const errorOrigen = document.getElementById("errorOrigen");
+const errorDestino = document.getElementById("errorDestino");
 
-const mostrarOpcionesFiltradas = (opciones, inputElement, opcionesElement) => {
-    opcionesElement.innerHTML = "";
-    opciones.forEach(opcion => {
-        const elementoLista = document.createElement('li');
-        elementoLista.textContent = opcion;
-        elementoLista.addEventListener('click', function() {
-            inputElement.value = opcion;
-            opcionesElement.innerHTML = "";
-        });
-        opcionesElement.appendChild(elementoLista);
-    });
+
+const sesion = () => {
+    datosBusqueda.origen = origenInput.value;
+    datosBusqueda.destino = destinoInput.value;
+    datosBusqueda.fechaIda = fechaIda.value;
+    datosBusqueda.fechaVuelta = fechaVuelta.value;
+    sessionStorage.setItem("busqueda", JSON.stringify(datosBusqueda));
+}
+
+const buscador = () => {
+    botonBuscar.addEventListener("click",sesion);
 };
 
-function filtrarOpciones(evento) {
-    const textoIngresado = evento.target.value;
-    const opcionesElement = evento.target.id === 'origen' ? document.getElementById('opciones-origen') : document.getElementById('opciones-destino');
-    const opcionesFiltradas = ciudades.filter(ciudad => ciudad.toLowerCase().startsWith(textoIngresado.toLowerCase()));
-    mostrarOpcionesFiltradas(opcionesFiltradas, evento.target, opcionesElement);
+buscador();
+
+const cargarOpciones1 = () => {
+    if (origenInput.value === "") {
+        ciudades.forEach((ciudad) => {
+            const li = document.createElement("li");
+            li.textContent = ciudad.toUpperCase();
+            li.addEventListener("click", () => {
+                origenInput.value = ciudad; 
+                opcionesOrigen.innerHTML = ""; 
+            })
+            opcionesOrigen.appendChild(li)
+        });
+    }
+}
+const cargarOpciones2 = () => {
+    if (destinoInput.value === "") {
+        ciudades.forEach((ciudad) => {
+            const li = document.createElement("li");
+            li.textContent = ciudad.toUpperCase();
+            li.addEventListener("click", () => {
+                destinoInput.value = ciudad; 
+                opcionesDestino.innerHTML = ""; 
+            });
+            opcionesDestino.appendChild(li)
+        });
+    }
 }
 
-function asignarEvento() {
-    const opcionesOrigen = document.getElementById('opciones-origen');
-    const opcionesDestino = document.getElementById('opciones-destino');
-    origenInput.addEventListener('input', function() {
-        opcionesOrigen.style.display = 'block';
-        filtrarOpciones(event);
+const mostrarOpciones = () => {
+    origenInput.addEventListener("input", cargarOpciones1);
+    destinoInput.addEventListener("input", cargarOpciones2);
+    origenInput.addEventListener("focus", cargarOpciones1);
+    destinoInput.addEventListener("focus", cargarOpciones2);
+}
+
+mostrarOpciones();
+
+const filtrar = () => {
+    const origenValor = origenInput.value.toLowerCase();
+    const destinoValor = destinoInput.value.toLowerCase();
+
+    const ciudadesFiltradasOrigen = ciudades.filter(ciudad => {
+        return ciudad.toLowerCase().includes(origenValor);
     });
-    destinoInput.addEventListener('input', function() {
-        opcionesDestino.style.display = 'block';
-        filtrarOpciones(event);
-    });
-    document.addEventListener('click', function(event) {
-        const clickedElement = event.target;
-        if (!origenInput.contains(clickedElement) && !opcionesOrigen.contains(clickedElement)) {
-        opcionesOrigen.style.display = 'none';
-        }
-        if (!destinoInput.contains(clickedElement) && !opcionesDestino.contains(clickedElement)) {
-            opcionesDestino.style.display = 'none';
-        }
+    const ciudadesFiltradasDestino = ciudades.filter(ciudad => {
+        return ciudad.toLowerCase().includes(destinoValor);
     });
 }
 
+origenInput.addEventListener("input", filtrar);
+destinoInput.addEventListener("input", filtrar);
 
-document.addEventListener('DOMContentLoaded', function() {
-    const opcionesOrigen = document.getElementById('opciones-origen');
-    const opcionesDestino = document.getElementById('opciones-destino');
-    opcionesOrigen.style.display = 'none';
-    opcionesDestino.style.display = 'none';
+
+const validarInput = () => {
+    const origen = origenInput.value.toLowerCase();
+    const destino = destinoInput.value.toLowerCase();
+
+    if (origen !== "" && !ciudades.includes(origen)) {
+        errorOrigen.innerHTML = "<p class='text-danger'>Ciudad no válida.</p>";
+    } 
     
-    asignarEvento();
-});
+    if (destino !== "" && !ciudades.includes(destino)) {
+        errorDestino.innerHTML = "<p class='text-danger'>Ciudad no válida.</p>";
+    } 
+};
 
-function validarInput() {
-    const error1 = document.getElementById("error1");
-    const error2 = document.getElementById("error2");
+origenInput.addEventListener("input", validarInput);
+destinoInput.addEventListener("input", validarInput);
 
+
+
+
+/*
     origenInput.addEventListener("input", function () {
         const textoIngresado = origenInput.value.toLowerCase();
         const opcionesFiltradas = ciudades.filter(ciudad => ciudad.toLowerCase().startsWith(textoIngresado));
@@ -114,29 +143,14 @@ function validarInput() {
     });
 }  
 
-const buscar = () => {
-    datosBusqueda.origen = origenInput.value;
-    datosBusqueda.destino = destinoInput.value;
-    datosBusqueda.fechaIda = document.getElementById("fechaIda").value;
-    datosBusqueda.fechaVuelta = document.getElementById("fechaVuelta").value;
-    sessionStorage.setItem("busqueda", JSON.stringify(datosBusqueda));
-};
 
-function envioFormulario(evento) {
-    evento.preventDefault();
-    buscar();
-}
-
-function enviar() {
-    formulario.addEventListener("submit", envioFormulario);
-}
 
 function resetear() {
     formulario.reset();
     sessionStorage.clear();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     mostrarOpcionesFiltradas(ciudades, origenInput, document.getElementById('opciones-origen'));
     mostrarOpcionesFiltradas(ciudades, destinoInput, document.getElementById('opciones-destino'));
     asignarEvento();
@@ -228,4 +242,4 @@ localStorage.setItem('vuelosDisponibles', JSON.stringify(vuelosDisponibles))
 // //     salidaIva = alert("su precio final con iva incluido en su pasaje aereo es de: " + precio.costoFinal)
 // // } else{
 // //     alert("gracias por usar el simulador")
-// //'
+// /*/
