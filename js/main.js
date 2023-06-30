@@ -36,42 +36,34 @@ const opcionesOrigen = document.getElementById("opcionesOrigen");
 const opcionesDestino = document.getElementById('opcionesDestino');
 const errorOrigen = document.getElementById("errorOrigen");
 const errorDestino = document.getElementById("errorDestino");
+const errorFecha1 = document.getElementById("errorFecha1")
+const errorFecha2 = document.getElementById("errorFecha2")
+const botonBuscar = document.getElementById("botonBuscar")
+const errorFormulario = document.getElementById("errorFormulario")
 
 
-const sesion = () => {
-    datosBusqueda.origen = origenInput.value;
-    datosBusqueda.destino = destinoInput.value;
-    datosBusqueda.fechaIda = fechaIda.value;
-    datosBusqueda.fechaVuelta = fechaVuelta.value;
-    sessionStorage.setItem("busqueda", JSON.stringify(datosBusqueda));
-}
-
-const buscador = () => {
-    botonBuscar.addEventListener("click",sesion);
-};
-
-buscador();
 
 const cargarOpciones1 = () => {
-    if (origenInput.value === "") {
+    if (origenInput.value === "" && opcionesOrigen.childElementCount === 0) {
         ciudades.forEach((ciudad) => {
             const li = document.createElement("li");
             li.textContent = ciudad.toUpperCase();
             li.addEventListener("click", () => {
-                origenInput.value = ciudad; 
+                origenInput.value = ciudad.toUpperCase(); 
                 opcionesOrigen.innerHTML = ""; 
             })
-            opcionesOrigen.appendChild(li)
+            opcionesOrigen.appendChild(li);
         });
     }
+
 }
 const cargarOpciones2 = () => {
-    if (destinoInput.value === "") {
+    if (destinoInput.value === "" && opcionesDestino.childElementCount === 0) {
         ciudades.forEach((ciudad) => {
             const li = document.createElement("li");
             li.textContent = ciudad.toUpperCase();
             li.addEventListener("click", () => {
-                destinoInput.value = ciudad; 
+                destinoInput.value = ciudad.toUpperCase();  
                 opcionesDestino.innerHTML = ""; 
             });
             opcionesDestino.appendChild(li)
@@ -79,97 +71,162 @@ const cargarOpciones2 = () => {
     }
 }
 
-const mostrarOpciones = () => {
-    origenInput.addEventListener("input", cargarOpciones1);
-    destinoInput.addEventListener("input", cargarOpciones2);
-    origenInput.addEventListener("focus", cargarOpciones1);
-    destinoInput.addEventListener("focus", cargarOpciones2);
-}
-
-mostrarOpciones();
-
-const filtrar = () => {
-    const origenValor = origenInput.value.toLowerCase();
-    const destinoValor = destinoInput.value.toLowerCase();
-
-    const ciudadesFiltradasOrigen = ciudades.filter(ciudad => {
-        return ciudad.toLowerCase().includes(origenValor);
+const filtrarOpciones1 = () => {
+    const valorBuscado1 = origenInput.value.toLowerCase();
+    opcionesOrigen.innerHTML = "";
+    ciudades.forEach((ciudad) => {
+        if (ciudad.toLowerCase().startsWith(valorBuscado1)) {
+            const li = document.createElement("li");
+            li.textContent = ciudad.toUpperCase();
+            li.addEventListener("click", () => {
+                origenInput.value = ciudad.toUpperCase();
+                opcionesOrigen.innerHTML = "";
+            });
+            opcionesOrigen.appendChild(li);
+        }
     });
-    const ciudadesFiltradasDestino = ciudades.filter(ciudad => {
-        return ciudad.toLowerCase().includes(destinoValor);
-    });
-}
-
-origenInput.addEventListener("input", filtrar);
-destinoInput.addEventListener("input", filtrar);
-
-
-const validarInput = () => {
-    const origen = origenInput.value.toLowerCase();
-    const destino = destinoInput.value.toLowerCase();
-
-    if (origen !== "" && !ciudades.includes(origen)) {
-        errorOrigen.innerHTML = "<p class='text-danger'>Ciudad no válida.</p>";
-    } 
-    
-    if (destino !== "" && !ciudades.includes(destino)) {
-        errorDestino.innerHTML = "<p class='text-danger'>Ciudad no válida.</p>";
-    } 
+    if (opcionesOrigen.childElementCount === 0 && valorBuscado1 !== "") {
+        errorOrigen.innerHTML = "<p class='text-danger text-center py-1'>Ciudad no válida</p>";
+    } else {
+        errorOrigen.innerHTML = "";
+        return true;
+    }
 };
 
-origenInput.addEventListener("input", validarInput);
-destinoInput.addEventListener("input", validarInput);
-
-
-
-
-/*
-    origenInput.addEventListener("input", function () {
-        const textoIngresado = origenInput.value.toLowerCase();
-        const opcionesFiltradas = ciudades.filter(ciudad => ciudad.toLowerCase().startsWith(textoIngresado));
-        mostrarOpcionesFiltradas(opcionesFiltradas, origenInput, document.getElementById('opciones-origen'));
-        error1.innerHTML = opcionesFiltradas.includes(textoIngresado) ? "" : "<p>El valor ingresado no es válido</p>";
-        error1.classList.toggle("text-danger", !!error1.innerHTML);
-        error1.classList.toggle("mt-1", !!error1.innerHTML);
+const filtrarOpciones2 = () => {
+    const valorBuscado2 = destinoInput.value.toLowerCase();
+    opcionesDestino.innerHTML = "";
+    ciudades.forEach((ciudad) => {
+        if (ciudad.toLowerCase().startsWith(valorBuscado2)) {
+            const li = document.createElement("li");
+            li.textContent = ciudad.toUpperCase();
+            li.addEventListener("click", () => {
+                destinoInput.value = ciudad.toUpperCase();
+                opcionesDestino.innerHTML = "";
+            });
+            opcionesDestino.appendChild(li);
+        }
     });
-
-    destinoInput.addEventListener("input", function () {
-        const textoIngresado = destinoInput.value.toLowerCase();
-        const opcionesFiltradas = ciudades.filter(ciudad => ciudad.toLowerCase().startsWith(textoIngresado));
-        mostrarOpcionesFiltradas(opcionesFiltradas, destinoInput, document.getElementById('opciones-destino'));
-        error2.innerHTML = opcionesFiltradas.includes(textoIngresado) ? "" : "<p>El valor ingresado no es válido</p>";
-        error2.classList.toggle("text-danger", !!error2.innerHTML);
-        error2.classList.toggle("mt-1", !!error2.innerHTML);
-    });
-}  
-
-
-
-function resetear() {
-    formulario.reset();
-    sessionStorage.clear();
+    if (opcionesDestino.childElementCount === 0 && valorBuscado2 !== "") {
+        errorDestino.innerHTML = "<p class='text-danger text-center py-1'>Ciudad no válida</p>";
+    } else {
+        errorDestino.innerHTML = "";
+        return true;
+    }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    mostrarOpcionesFiltradas(ciudades, origenInput, document.getElementById('opciones-origen'));
-    mostrarOpcionesFiltradas(ciudades, destinoInput, document.getElementById('opciones-destino'));
-    asignarEvento();
-    enviar();
-    resetear();
-});
+function eventosOrigen() {
+    cargarOpciones1()
+    filtrarOpciones1()
+}
+
+function eventosDestino() {
+    cargarOpciones2()
+    filtrarOpciones2()
+}
+
+const ocultarOpciones = () => {
+    setTimeout(() => {
+        opcionesOrigen.innerHTML = "";
+        opcionesDestino.innerHTML = "";
+    }, 200);
+};
+
+const fechaActual = new Date().toISOString().split("T")[0];
+fechaIda.setAttribute("min", fechaActual);
+fechaIda.setAttribute("value", fechaActual);
+
+const validarfechaVuelta = () => {
+    const fechaidaValor = new Date(Date.parse(fechaIda.value));
+    const fechavueltaValor = new Date(Date.parse(fechaVuelta.value));
+    if (!fechaVuelta.value) {
+        errorFecha2.innerHTML = "<p class='text-danger text-center py-1'>Debes indicar una fecha</p>";
+        return false;
+    }
+    if (fechaidaValor > fechavueltaValor) {
+        errorFecha2.innerHTML = "<p class='text-danger text-center py-1'>La fecha de vuelta debe ser posterior a la fecha de ida</p>";
+        return false;
+    } else {
+        errorFecha2.innerHTML = "";
+        return true;
+    }
+}
+
+const validarfechaIda = () => {
+    const fechaidaValor = new Date(Date.parse(fechaIda.value));
+    const fechaActual = new Date();
+    if (!fechaIda.value) {
+        errorFecha1.innerHTML = "<p class='text-danger text-center py-1'>Debes indicar una fecha</p>";
+        return false;
+    }
+    if (fechaidaValor < fechaActual) {
+        errorFecha1.innerHTML = "<p class='text-danger text-center py-1'>La fecha de ida no puede ser menor a la fecha actual</p>";
+        return false;
+    } else {
+        errorFecha1.innerHTML = "";
+        return true;
+    }
+};
+
+const eventos = () => {
+    origenInput.addEventListener("keyup", eventosOrigen);
+    destinoInput.addEventListener("keyup", eventosDestino);
+    origenInput.addEventListener("focus", cargarOpciones1);
+    destinoInput.addEventListener("focus", cargarOpciones2);
+    origenInput.addEventListener("blur", ocultarOpciones);
+    destinoInput.addEventListener("blur", ocultarOpciones);
+    fechaIda.addEventListener("input", validarfechaIda);
+    fechaVuelta.addEventListener("input", validarfechaVuelta);
+}
+
+eventos();
+
+const validarBusqueda = () => {
+    if (validarfechaIda() && validarfechaVuelta() && filtrarOpciones1() && filtrarOpciones2()) {
+        if (origenInput.value !== destinoInput.value) {
+            return true;
+        } else {
+            errorFormulario.innerHTML = "<p class='text-danger text-center py-1'>El origen y el destino no pueden ser iguales</p>";
+            return false;
+        }
+    } else {
+        return false;
+    }
+};
+
+
+
+const sesion = () => {
+    if (validarBusqueda()) {
+        if (origenInput.value !== "" && destinoInput.value !== "") {
+            datosBusqueda.origen = origenInput.value;
+            datosBusqueda.destino = destinoInput.value;
+            datosBusqueda.fechaIda = fechaIda.value;
+            datosBusqueda.fechaVuelta = fechaVuelta.value;
+            sessionStorage.setItem("busquedaUsuario", JSON.stringify(datosBusqueda));
+        }
+    }
+};
 
 const obtenerVueloAleatorio = () => {
     const origen = ciudades[Math.floor(Math.random() * ciudades.length)];
     const destino = ciudades[Math.floor(Math.random() * ciudades.length)];
     const precio = precios[Math.floor(Math.random() * precios.length)];
-    const mes = meses[Math.floor(Math.random() * meses.length)];
-
-    return { origen, destino, precio, mes };
+    const mesIdaIndex = Math.floor(Math.random() * meses.length);
+    const mesVueltaIndex = Math.floor(Math.random() * meses.length);
+    let mesIda = meses[mesIdaIndex];
+    let mesVuelta = meses[mesVueltaIndex];
+    if (mesIdaIndex > mesVueltaIndex) {
+        mesIda = meses[mesVueltaIndex];
+        mesVuelta = meses[mesIdaIndex];
+    }
+    return { origen, destino, precio, mesIda, mesVuelta };
 };
+
 
 const generarVuelosDisponibles = () => {
     const vuelosDisponibles = [];
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 10000; i++) {
         vuelosDisponibles.push(obtenerVueloAleatorio());
     }
     return vuelosDisponibles;
@@ -178,68 +235,58 @@ const generarVuelosDisponibles = () => {
 const vuelosDisponibles = generarVuelosDisponibles();
 localStorage.setItem('vuelosDisponibles', JSON.stringify(vuelosDisponibles))
 
-// //const contenidoHTML = `
-// <section>
-//     <div class="container">
-//         <h2 class="text-center">Vuelos Encontrados</h2>
-//         <div>
-//             <div id="encontradosIda" class="container row">
-//                 <div class="d-flex align-items-center text-center">
-//                     <svg width="30" height="30" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
-//                         <path d="M20.012 18v2h-20v-2h20zm3.973-13.118c.154 1.349-.884 2.615-1.927 3.491-.877.735-9.051 6.099-9.44 6.307-1.756.936-3.332 1.306-4.646 1.32-1.36.014-2.439-.354-3.144-.872l-4.784-3.977 3.742-2.373 4.203 1.445.984-.578-4.973-3.645 3.678-2.124 7.992 1.545c.744-.445 1.482-.9 2.225-1.348 1.049-.623 2.056-1.055 3.387-1.055 1.321 0 2.552.52 2.703 1.864zm-4.341.512c-.419.192-3.179 1.882-3.615 2.144l-8.01-1.55-.418.241 5.288 3.307-4.683 2.876-4.214-1.448-.69.395c.917.729 1.787 1.522 2.751 2.186 1.472.962 4.344.22 5.685-.663.9-.592 7.551-4.961 8.436-5.582.605-.431 1.797-1.414 1.824-2.152l.001-.004c-.644-.287-1.716-.041-2.355.25z"/>
-//                     </svg>
-//                     <h4 class="mx-3">IDA</h4>
-//                     <h4 class="mx-3">{$datosBusqueda.fechaIda}</h4>
-//                 </div>
-//                 <div class="d-flex my-4">
-//                 <div></div>
-//                 <div></div>
-//                 <input class="form-check-input" type="radio" name="flexRadioDefault" id="idaOpcion1">
-//             </div>
-//         <div class="d-flex my-4">
-//           <div></div>
-//           <div></div>
-//           <input class="form-check-input" type="radio" name="flexRadioDefault" id="idaOpcion2">
-//         </div>
-//         <div class="d-flex my-4">
-//           <div></div>
-//           <div></div>
-//           <input class="form-check-input" type="radio" name="flexRadioDefault" id="idaOpcion3">
-//         </div>
-//       </div>
-//       <div id="encontradosVuelta" class="d-flex container row">
-//         <div class="d-flex align-items-center text-center">
-//           <svg width="30" height="30" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
-//             <path d="M24.012 20h-20v-2h20v2zm-2.347-5.217c-.819 1.083-2.444 1.284-3.803 1.2-1.142-.072-10.761-1.822-11.186-1.939-1.917-.533-3.314-1.351-4.276-2.248-.994-.927-1.557-1.902-1.676-2.798l-.724-4.998 3.952.782 2.048 2.763 1.886.386-1.344-4.931 4.667 1.095 4.44 5.393 2.162.51c1.189.272 2.216.653 3.181 1.571.957.911 1.49 2.136.673 3.214zm-3.498-2.622c-.436-.15-3.221-.781-3.717-.892l-4.45-5.409-.682-.164 1.481 4.856-5.756-1.193-2.054-2.773-.772-.19.486 2.299c.403 1.712 2.995 3.155 4.575 3.439 1.06.192 8.89 1.612 9.959 1.773.735.105 2.277.214 2.805-.302l.003-.002c-.268-.652-1.214-1.213-1.878-1.442z"/>
-//           </svg>
-//           <h4 class="mx-3">VUELTA</h4>
-//           <h4 class="mx-3">fecha 00/00/0000</h4>
-//         </div>
-//         <div class="d-flex my-4">
-//           <div></div>
-//           <div></div>
-//           <input class="form-check-input" type="radio" name="flexRadioDefault" id="vueltaOpcion1">
-//         </div>
-//         <div class="d-flex my-4">
-//           <div></div>
-//           <div></div>
-//           <input class="form-check-input" type="radio" name="flexRadioDefault" id="vueltaOpcion2">
-//         </div>
-//         <div class="d-flex my-4">
-//           <div></div>
-//           <div></div>
-//           <input class="form-check-input" type="radio" name="flexRadioDefault" id="vueltaOpcion3">
-//         </div>
-//       </div>
-//     </div>
-//   </div>
-// </section>
+const opcionesVuelos = () => {
+    const datosBusqueda = JSON.parse(sessionStorage.getItem("busquedaUsuario"));
+    const vuelosFiltrados = vuelosDisponibles.filter((vuelo) => {
+        const origenCoincide = vuelo.origen.toLowerCase() === datosBusqueda.origen.toLowerCase();
+        const destinoCoincide = vuelo.destino.toLowerCase() === datosBusqueda.destino.toLowerCase();
+        const mesIdaCoincide = meses.indexOf(vuelo.mesIda) === new Date(datosBusqueda.fechaIda).getMonth();
+        const mesVueltaCoincide = meses.indexOf(vuelo.mesVuelta) === new Date(datosBusqueda.fechaVuelta).getMonth();
+        return origenCoincide && destinoCoincide && mesIdaCoincide && mesVueltaCoincide;
+    });
+    const vuelosEncontradosSection = document.getElementById("vuelosEncontrados");
+    vuelosEncontradosSection.innerHTML = "";
+    if (vuelosFiltrados.length > 0) {
+        vuelosFiltrados.forEach((vuelo) => {
+            const Titulo = document.createElement("h2");
+            vuelosEncontradosSection.appendChild(Titulo);
+            Titulo.textContent = "Vuelos Encontrados"
+            const div = document.createElement("div")
+            Titulo.appendChild(div)
+            div.classList.add("row");
+            div.innerHTML = `<div class="col-md-6 mt-2">
+                <h4>Desde: ${vuelo.origen}</h4>
+                <h4>Hacia: ${vuelo.destino}</h4><div>
+                <div class="col-md-6 mt-2">
+                <p>${meses[vuelo.mesIda]}</p>
+                <p>${meses[vuelo.mesVuelta]}</p></div>
+                <p>: $${vuelo.precio}</p>
+                <button id="seleccionar">Seleccionar</button>`;
+            const seleccionarBoton = document.getElementById("seleccionar");
+            seleccionarBoton.addEventListener("click", () => {
+                console.log("Vuelo seleccionado:", vuelo);
+            });
+        });
+    } else {
+        const mensajeError = document.createElement("p");
+        mensajeError.textContent = "No se encontraron vuelos disponibles para los criterios de búsqueda seleccionados.";
+        vuelosEncontradosSection.appendChild(mensajeError);
+    }
+};
 
-// // solicitarIva = prompt("deseas saber el precio final con iva: (+21%) (si o no)")
+botonBuscar.addEventListener("click", () => {
+    if (validarBusqueda()) {
+        sesion();
+        opcionesVuelos();
+      errorFormulario.innerHTML = ""; // Limpiar el mensaje de error si la validación es exitosa
+    } else {
+        errorFormulario.innerHTML = "<p class='text-danger text-center py-1'>Los datos ingresados no son válidos para continuar</p>";
+    }
+});
 
-// // if ((solicitarIva==="si") && (solicitarIva==="no" )) {
-// //     precio.costoFinal = (vuelo.precio * iva) / 100
-// //     salidaIva = alert("su precio final con iva incluido en su pasaje aereo es de: " + precio.costoFinal)
-// // } else{
-// //     alert("gracias por usar el simulador")
-// /*/
+
+const resetear = () => {sessionStorage.clear();}
+window.addEventListener("beforeunload", resetear);
+
+// me falta desarrollar el diseno de la seccion habilitada atravez de innerhtml
+// me falta que al seleccionar el vuelo preferido confirma la compra y le sume el costo total +iva
