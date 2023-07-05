@@ -86,7 +86,8 @@ const filtrarOpciones1 = () => {
         }
     });
     if (opcionesOrigen.childElementCount === 0 && valorBuscado1 !== "") {
-        errorOrigen.innerHTML = "<p class='text-danger text-center py-1'>Ciudad no válida</p>";
+        errorOrigen.innerHTML = "<p class='text-danger text-center py-1 fw-semibold'>Ciudad no válida</p>";
+        return false;
     } else {
         errorOrigen.innerHTML = "";
         return true;
@@ -108,7 +109,8 @@ const filtrarOpciones2 = () => {
         }
     });
     if (opcionesDestino.childElementCount === 0 && valorBuscado2 !== "") {
-        errorDestino.innerHTML = "<p class='text-danger text-center py-1'>Ciudad no válida</p>";
+        errorDestino.innerHTML = "<p class='text-danger text-center py-1 fw-semibold'>Ciudad no válida</p>";
+        return false;
     } else {
         errorDestino.innerHTML = "";
         return true;
@@ -125,26 +127,19 @@ function eventosDestino() {
     filtrarOpciones2()
 }
 
-const ocultarOpciones = () => {
-    setTimeout(() => {
-        opcionesOrigen.innerHTML = "";
-        opcionesDestino.innerHTML = "";
-    }, 200);
-};
-
-const fechaActual = new Date().toISOString().split("T")[0];
+const fechaActual = new Date().toLocaleDateString('es-ES');
 fechaIda.setAttribute("min", fechaActual);
 fechaIda.setAttribute("value", fechaActual);
 
 const validarfechaVuelta = () => {
     const fechaidaValor = new Date(Date.parse(fechaIda.value));
     const fechavueltaValor = new Date(Date.parse(fechaVuelta.value));
-    if (!fechaVuelta.value) {
-        errorFecha2.innerHTML = "<p class='text-danger text-center py-1'>Debes indicar una fecha</p>";
+    if (fechaVuelta.value=="") {
+        errorFecha2.innerHTML = "<p class='text-danger text-center py-1 fw-semibold'>Debes indicar una fecha valida</p>";
         return false;
     }
     if (fechaidaValor > fechavueltaValor) {
-        errorFecha2.innerHTML = "<p class='text-danger text-center py-1'>La fecha de vuelta debe ser posterior a la fecha de ida</p>";
+        errorFecha2.innerHTML = "<p class='text-danger text-center py-1 fw-semibold'>La fecha de vuelta debe ser posterior a la fecha de ida</p>";
         return false;
     } else {
         errorFecha2.innerHTML = "";
@@ -155,12 +150,12 @@ const validarfechaVuelta = () => {
 const validarfechaIda = () => {
     const fechaidaValor = new Date(Date.parse(fechaIda.value));
     const fechaActual = new Date();
-    if (!fechaIda.value) {
-        errorFecha1.innerHTML = "<p class='text-danger text-center py-1'>Debes indicar una fecha</p>";
+    if (fechaIda.value=="") {
+        errorFecha1.innerHTML = "<p class='text-danger text-center py-1 fw-semibold'>Debes indicar una fecha valida</p>";
         return false;
     }
     if (fechaidaValor < fechaActual) {
-        errorFecha1.innerHTML = "<p class='text-danger text-center py-1'>La fecha de ida no puede ser menor a la fecha actual</p>";
+        errorFecha1.innerHTML = "<p class='text-danger text-center py-1 fw-semibold'>La fecha de ida no puede ser menor a la fecha actual</p>";
         return false;
     } else {
         errorFecha1.innerHTML = "";
@@ -173,8 +168,6 @@ const eventos = () => {
     destinoInput.addEventListener("keyup", eventosDestino);
     origenInput.addEventListener("focus", cargarOpciones1);
     destinoInput.addEventListener("focus", cargarOpciones2);
-    origenInput.addEventListener("blur", ocultarOpciones);
-    destinoInput.addEventListener("blur", ocultarOpciones);
     fechaIda.addEventListener("input", validarfechaIda);
     fechaVuelta.addEventListener("input", validarfechaVuelta);
 }
@@ -183,18 +176,14 @@ eventos();
 
 const validarBusqueda = () => {
     if (validarfechaIda() && validarfechaVuelta() && filtrarOpciones1() && filtrarOpciones2()) {
-        if (origenInput.value !== destinoInput.value) {
-            return true;
-        } else {
-            errorFormulario.innerHTML = "<p class='text-danger text-center py-1'>El origen y el destino no pueden ser iguales</p>";
-            return false;
-        }
+        return true;
     } else {
         return false;
     }
 };
 
-
+let fechaIdaSesion
+let fechaVueltaSesion 
 
 const sesion = () => {
     if (validarBusqueda()) {
@@ -205,8 +194,12 @@ const sesion = () => {
             datosBusqueda.fechaVuelta = fechaVuelta.value;
             sessionStorage.setItem("busquedaUsuario", JSON.stringify(datosBusqueda));
         }
+        const datosBusquedaSesion = JSON.parse(sessionStorage.getItem("busquedaUsuario"));
+        fechaIdaSesion = datosBusquedaSesion.fechaIda;
+        fechaVueltaSesion = datosBusquedaSesion.fechaVuelta;
     }
 };
+
 
 const obtenerVueloAleatorio = () => {
     const origen = ciudades[Math.floor(Math.random() * ciudades.length)];
@@ -226,7 +219,7 @@ const obtenerVueloAleatorio = () => {
 
 const generarVuelosDisponibles = () => {
     const vuelosDisponibles = [];
-    for (let i = 0; i < 10000; i++) {
+    for (let i = 0; i < 50000; i++) {
         vuelosDisponibles.push(obtenerVueloAleatorio());
     }
     return vuelosDisponibles;
@@ -247,23 +240,60 @@ const opcionesVuelos = () => {
     const vuelosEncontradosSection = document.getElementById("vuelosEncontrados");
     vuelosEncontradosSection.innerHTML = "";
     if (vuelosFiltrados.length > 0) {
+        const contenedor = document.createElement("div");
+        vuelosEncontradosSection.appendChild(contenedor);            
+        contenedor.innerHTML = '<h2 class="text-center">Vuelos Encontrados</h2>'
+        const div = document.createElement("div")
+        contenedor.appendChild(div)
         vuelosFiltrados.forEach((vuelo) => {
-            const Titulo = document.createElement("h2");
-            vuelosEncontradosSection.appendChild(Titulo);
-            Titulo.textContent = "Vuelos Encontrados"
-            const div = document.createElement("div")
-            Titulo.appendChild(div)
-            div.classList.add("row");
-            div.innerHTML = `<div class="col-md-6 mt-2">
-                <h4>Desde: ${vuelo.origen}</h4>
-                <h4>Hacia: ${vuelo.destino}</h4><div>
-                <div class="col-md-6 mt-2">
-                <p>${meses[vuelo.mesIda]}</p>
-                <p>${meses[vuelo.mesVuelta]}</p></div>
-                <p>: $${vuelo.precio}</p>
-                <button id="seleccionar">Seleccionar</button>`;
-            const seleccionarBoton = document.getElementById("seleccionar");
-            seleccionarBoton.addEventListener("click", () => {
+            div.innerHTML = `<div class="container">
+            <div class="border p-2">
+                <div class="d-flex justify-content-start">
+                    <p class="p-2"><b>IDA</b></p>
+                    <p class="p-2">${fechaIda}</p>
+                </div>
+                <div class="d-flex justify-content-evenly align-items-center">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio">
+                    </div>
+                    <div class="d-flex">
+                        <h4 class="p-2">Desde: ${vuelo.origen}</h4>
+                        <h4 class="p-2">Hacia: ${vuelo.destino}</h4>
+                    </div>
+                    <div>
+                        <p><b>Precio: $${vuelo.precio}</b></p>
+                    </div>         
+                </div>
+            </div>
+            <div class="border p-2">
+                <div class="d-flex justify-content-start">
+                    <p class="p-2"><b>VUELTA</b></p>
+                    <p class="p-2">${fechaVuelta}</p>
+                </div>
+                <div class="d-flex justify-content-evenly align-items-center">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio">
+                    </div> 
+                    <div class="d-flex">
+                        <h4 class="p-2">Desde: ${vuelo.destino}</h4>
+                        <h4 class="p-2">Hacia: ${vuelo.origen}</h4>
+                    </div>
+                    <div>
+                        <p><b>Precio: $${vuelo.precio}</b></p>   
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="border pt-5 text-center">
+            <div>
+                <p><b>Precio total: $${vuelo.precio * 2}</b></p>
+            </div>
+            <div>
+                <button id="comprar" type="button" class="btn btn-success">COMPRAR<button>
+            </div>
+        </div>`;
+            const comprarBoton = document.getElementById("comprar");
+            comprarBoton.addEventListener("click", () => {
                 console.log("Vuelo seleccionado:", vuelo);
             });
         });
@@ -274,16 +304,33 @@ const opcionesVuelos = () => {
     }
 };
 
-botonBuscar.addEventListener("click", () => {
+const datosInvalidos = () => {
+    Swal.fire(
+        'Error',
+        'Campos de datos no validos',
+        'error'
+    )
+}
+
+const datosValidos = () => {
+    Swal.fire(
+        '',
+        'Campos de datos validos',
+        'success'
+    )
+}
+
+const buscar = () => {
     if (validarBusqueda()) {
         sesion();
         opcionesVuelos();
-      errorFormulario.innerHTML = ""; // Limpiar el mensaje de error si la validación es exitosa
+        datosValidos();
     } else {
-        errorFormulario.innerHTML = "<p class='text-danger text-center py-1'>Los datos ingresados no son válidos para continuar</p>";
+        datosInvalidos();
     }
-});
+}
 
+botonBuscar.addEventListener("click", buscar)
 
 const resetear = () => {sessionStorage.clear();}
 window.addEventListener("beforeunload", resetear);
